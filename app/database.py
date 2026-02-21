@@ -1,17 +1,21 @@
+import os
+from typing import Any
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from .main import psycopg2
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Use SQLAlchemy's correct dialect name: postgresql (not postgres)
-# and specify a driver. psycopg (v3) is recommended on modern Python.
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:root@localhost:5432/fastApi"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/fastapi"
+)
 
-SessionLocal = sessionmaker(autocommit = False, autoflush=False, bind=engine)
+engine_kwargs: dict[str, Any] = {"pool_pre_ping": True}
+if DATABASE_URL.startswith("sqlite"):
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
 
+engine = create_engine(DATABASE_URL, **engine_kwargs)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
