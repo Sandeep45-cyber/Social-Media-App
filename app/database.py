@@ -1,3 +1,5 @@
+"""Database engine and session lifecycle configuration."""
+
 import os
 from typing import Any
 from sqlalchemy import create_engine
@@ -18,6 +20,7 @@ Base = declarative_base()
 
 
 def get_db():
+    """Yield a request-scoped SQLAlchemy session and close it reliably."""
     db = SessionLocal()
     try:
         yield db

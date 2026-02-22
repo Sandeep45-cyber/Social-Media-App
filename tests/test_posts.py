@@ -1,3 +1,5 @@
+"""API tests for post CRUD endpoints using a SQLite test database."""
+
 import os
 
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
@@ -17,6 +19,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 
 def override_get_db():
+    """Provide a test-scoped database session to FastAPI dependencies."""
     db = TestingSessionLocal()
     try:
         yield db
@@ -29,11 +32,13 @@ client = TestClient(app)
 
 
 def setup_function():
+    """Reset DB schema between tests for isolated behavior."""
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
 
 def test_create_post():
+    """Creating a post should return 201 and echoed content."""
     res = client.post(
         "/posts",
         json={"title": "Hello", "content": "World", "published": True},
@@ -45,6 +50,7 @@ def test_create_post():
 
 
 def test_get_posts():
+    """Listing posts should include previously created records."""
     client.post(
         "/posts",
         json={"title": "A", "content": "B", "published": True},
@@ -58,5 +64,6 @@ def test_get_posts():
 
 
 def test_delete_missing_post():
+    """Deleting an unknown post id should return 404."""
     res = client.delete("/posts/999")
     assert res.status_code == 404

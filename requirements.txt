@@ -1,8 +1,16 @@
+# API framework
 fastapi==0.116.1
+# ASGI server
 uvicorn[standard]==0.35.0
+# ORM
 sqlalchemy==2.0.38
+# PostgreSQL driver
 psycopg[binary]==3.2.13
+# Data validation
 pydantic==2.12.5
+# Testing
 pytest==8.4.1
+# Test client transport
 httpx==0.28.1
+# Linting
 ruff==0.12.8
