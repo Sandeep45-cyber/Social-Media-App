@@ -47,7 +47,7 @@ def cpost(post: schemas.PostCreate, db: Session = Depends(get_db)):
     return new_post
 
 
-@app.get("/posts/{id}")
+@app.get("/posts/{id}", response_model=schemas.Post)
 def get_post(id: int, db: Session = Depends(get_db)):
     """Fetch one post by its identifier."""
     post = db.query(models.Post).filter(models.Post.id == id).first()
@@ -55,7 +55,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
     if not post:
         raise HTTPException(status_code=404, detail=f"The post with id {id} was not found")
 
-    return {"data": post}
+    return post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -72,7 +72,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model=schemas.Post)
 def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     """Update title/content/published fields for an existing post."""
     updatedpost = db.query(models.Post).filter(models.Post.id == id)
@@ -91,4 +91,4 @@ def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)
 
     db.commit()
 
-    return {"data": updatedpost.first()}
+    return updatedpost.first()
